@@ -1,13 +1,12 @@
 #scrapping
 import pandas as pd
 import openpyxl as xl
-from openpyxl.chart import BarChart,Reference
-from pathlib import Path
 import requests
 from datetime import datetime, timedelta
 import investpy
 from random import *
 import openpyxl as xl
+import time
 
 def yesterday(frmt='%m/%d/%Y', string=True):
     yesterday = datetime.now() - timedelta(1)
@@ -18,9 +17,9 @@ def yesterday(frmt='%m/%d/%Y', string=True):
 def export_quotes_to_excel(start_date: str, tickers : list[str]):
     chaine = ""
     col = 1
-    dicto = investpy.stocks.get_stocks(country=None)
-    wb=xl.Workbook()
-    sh=wb.active
+    dicto = investpy.stocks.get_stocks(country='united states')
+    wb= xl.Workbook()
+    sh= wb.active
     
     for ticker in tickers:
         
@@ -30,16 +29,18 @@ def export_quotes_to_excel(start_date: str, tickers : list[str]):
         try:
              country='united states'
              url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=stocks&country="+str(country)+"&symbol="+str(ticker)+"&from_date="+str(start_date)+"&to_date="+yesterday()
+             
              response = requests.get(url)
              resp_dict = response.json()
         except:
-            
+
             try:
                 country=dicto[dicto['symbol']==ticker].iloc[0]['country']
                 url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=stocks&country="+str(country)+"&symbol="+str(ticker)+"&from_date="+str(start_date)+"&to_date="+yesterday()
                 response = requests.get(url)
                 resp_dict = response.json()              
             except: 
+                chaine =  str(chaine) + " ... then failed"
                 chaine = str(chaine) + country + ": "+ticker+ "=> KO \n"
                 continue
         
@@ -55,4 +56,4 @@ def export_quotes_to_excel(start_date: str, tickers : list[str]):
             print("Operation failed !")
             
     print(chaine+ "check export_quotes_to_excel.xlsx" )
-    
+
