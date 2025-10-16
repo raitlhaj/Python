@@ -7,6 +7,7 @@ import investpy
 from random import *
 import openpyxl as xl
 import time
+from utils.utils.files import stocks_url_to_scrap, output_file_quotes_excel
 
 def yesterday(frmt='%m/%d/%Y', string=True):
     yesterday = datetime.now() - timedelta(1)
@@ -28,7 +29,7 @@ def export_quotes_to_excel(start_date: str, tickers : list[str]):
         
         try:
              country='united states'
-             url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=stocks&country="+str(country)+"&symbol="+str(ticker)+"&from_date="+str(start_date)+"&to_date="+yesterday()
+             url = stocks_url_to_scrap+str(ticker)+"&from_date="+str(start_date)+"&to_date="+yesterday()
              
              response = requests.get(url)
              resp_dict = response.json()
@@ -36,7 +37,7 @@ def export_quotes_to_excel(start_date: str, tickers : list[str]):
 
             try:
                 country=dicto[dicto['symbol']==ticker].iloc[0]['country']
-                url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=stocks&country="+str(country)+"&symbol="+str(ticker)+"&from_date="+str(start_date)+"&to_date="+yesterday()
+                url = stocks_url_to_scrap +str(country)+"&symbol="+str(ticker)+"&from_date="+str(start_date)+"&to_date="+yesterday()
                 response = requests.get(url)
                 resp_dict = response.json()              
             except: 
@@ -51,7 +52,7 @@ def export_quotes_to_excel(start_date: str, tickers : list[str]):
           sh.cell(row,col).value = df['last_close'][row-1]
 
         try:
-            wb.save(r"C:\\Users\Administrateur\Dropbox\Working\Invest\export_quotes_to_excel.xlsx")
+            wb.save(output_file_quotes_excel)
         except:
             print("Operation failed !")
             

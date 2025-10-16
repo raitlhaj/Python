@@ -14,6 +14,7 @@ import requests
 import investpy
 from random import *
 import openpyxl as xl
+from utils.utils.files import indices_url_to_scrap
 
 
 class Index:
@@ -28,13 +29,13 @@ class Index:
        
         try:
              country='united states'
-             url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=indices&country="+str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
+             url = indices_url_to_scrap + str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
              response = requests.get(url)
              resp_dict = response.json()
         except:
             try:
                 country=dicto[dicto['symbol']==self.ticker].iloc[0]['country']
-                url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=indices&country="+str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
+                url = indices_url_to_scrap + str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
                 response = requests.get(url)
                 resp_dict = response.json()              
             except: 

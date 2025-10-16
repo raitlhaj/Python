@@ -12,7 +12,8 @@ import requests
 import investpy
 from random import *
 from multiprocessing import Process, Queue
-
+from utils.utils.files import stocks_url_to_scrap, brower_path, chrome_driver_path, fini_url_search, fini_url_login
+from utils.utils.passwords import MY_PASSWORD, MY_USERNAME
 
 class Stock:
     
@@ -26,14 +27,14 @@ class Stock:
     
         try:
             country='united states'
-            url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=stocks&country="+str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
+            url = stocks_url_to_scrap + str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
             response = requests.get(url)
             resp_dict = response.json()
         except:
             
             try:
                 country=dicto[dicto['symbol']==self.ticker].iloc[0]['country']
-                url = "http://api.scraperlink.com/investpy/?email=ait_lhaj92@live.fr&type=historical_data&product=stocks&country="+str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
+                url = stocks_url_to_scrap + str(country)+"&symbol="+str(self.ticker)+"&from_date="+str(start_date)+"&to_date="+str(end_date)
                 response = requests.get(url)
                 resp_dict = response.json()              
             except: 
@@ -54,25 +55,20 @@ class Stock:
 
         if tickers is None :
             tickers = [self.ticker]
-            
-        
+              
         # Set up options for Brave browser
         option = webdriver.ChromeOptions()
-        option.binary_location = r"C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
-        service = Service('C:\\Users\\Administrateur\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe')
+        option.binary_location = brower_path  # Path to Brave browser executable
+        service = Service(chrome_driver_path)  # Path to ChromeDriver executable
         driver = webdriver.Chrome(service=service, options=option)
-        driver.get("https://app.finispia.com/login")
+        driver.get(fini_url_login)
 
         # Locate the username and password fields and enter credentials
         username_field = driver.find_element(By.NAME, 'email')  # Adjust the element identifier as needed
         password_field = driver.find_element(By.NAME, 'password')  # Adjust the element identifier as needed
 
-        # Enter your username and password
-        username = 'ait_lhaj92@live.fr'  # Replace with your actual username
-        password = 'Rac.19920103'  # Replace with your actual password
-
-        username_field.send_keys(username)
-        password_field.send_keys(password)
+        username_field.send_keys(MY_USERNAME)
+        password_field.send_keys(MY_PASSWORD)
 
         # Submit the login form
         password_field.send_keys(Keys.RETURN)
@@ -86,7 +82,7 @@ class Stock:
      
         def H(self, ticker):
             time.sleep(5) 
-            driver.get("https://app.finispia.com/company/search/")
+            driver.get(fini_url_search)
             time.sleep(5) 
 
             text_input = driver.find_element(By.NAME, 'company')
